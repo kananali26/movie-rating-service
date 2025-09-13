@@ -1,0 +1,103 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: movie-rating-service
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8080
+    description: localhost
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/movies:
+    get:
+      operationId: getMovies
+      summary: Get Movies
+      description: Endpoint to retrieve a paginated list of movies
+      tags:
+        - movie
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: pageNumber
+          required: false
+          schema:
+            type: integer
+            default: 0
+          description: Page number (zero-based)
+        - in: query
+          name: pageSize
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 0
+            maximum: 100
+          description: Number of items per page
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          description: Filter movies by name (case-insensitive, partial match)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieListResponseDto'
+          description: Successfully retrieved the list of movies
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Authorization header using the Bearer scheme
+  schemas:
+    PaginationInfoDto:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          example: 0
+        pageSize:
+          type: integer
+          default: 10
+          minimum: 0
+          maximum: 100
+        totalRecords:
+          type: integer
+          example: 1
+      required: [ "pageNumber", "pageSize", "totalRecords" ]
+    CreateMovieRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "The Shawshank Redemption"
+      required:
+        - name
+    MovieDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "The Shawshank Redemption"
+    MovieListResponseDto:
+      type: object
+      properties:
+        movies:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovieDto'
+        paginationInfo:
+          $ref: '#/components/schemas/PaginationInfoDto'
