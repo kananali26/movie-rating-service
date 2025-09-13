@@ -15,7 +15,7 @@ interface MovieJpaRepository extends JpaRepository<MovieDbo, Long>, JpaSpecifica
         static Specification<MovieDbo> filterByName(@Nullable String name) {
             return (root, query, builder) -> {
                 if (Objects.isNull(name) || name.trim().isEmpty()) {
-                    return builder.conjunction(); // Return always true predicate if no name filter
+                    return builder.conjunction();
                 }
 
                 return builder.like(

@@ -19,21 +19,16 @@ class MovieMySqlRepository implements MovieRepository {
 
     @Override
     public PagedResult<Movie> getMovies(String name, int pageNumber, int pageSize) {
-        // Create a PageRequest object for pagination
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
 
         // Get the page of MovieDbo objects from the JPA repository
         Page<MovieDbo> movieDbosPage = movieJpaRepository.findAll(
-            MovieJpaRepository.Specifications.filterByName(name),
-            pageRequest
-        );
+            MovieJpaRepository.Specifications.filterByName(name), pageRequest);
 
-        // Convert MovieDbo objects to domain Movie objects
         List<Movie> movies = movieDbosPage.getContent().stream()
             .map(movieConverter::convert)
             .collect(Collectors.toList());
 
-        // Create and return a PagedResult with the domain Movie objects
         return new PagedResult<>(
             movies,
             pageNumber,

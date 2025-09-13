@@ -1,0 +1,16 @@
+spring:
+  flyway:
+    enabled: true
+    validate-on-migrate: false
+  jpa:
+    generate-ddl: 'false'
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          batch_size: 10
+    hibernate:
+      ddl-auto: none
+  datasource:
+    hikari:
+      maximum-pool-size: 5
