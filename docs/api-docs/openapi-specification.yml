@@ -18,7 +18,7 @@ paths:
       summary: Get Movies
       description: Endpoint to retrieve a paginated list of movies
       tags:
-        - movie
+        - Movie
       security:
         - bearerAuth: []
       parameters:
@@ -51,6 +51,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/MovieListResponseDto'
           description: Successfully retrieved the list of movies
+  /api/v1/users/register:
+    post:
+      operationId: registerUser
+      summary: Register a new user
+      description: Endpoint to register a new user
+      tags:
+        - User
+      security: [ ]  # No authentication required for registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequestDto'
+      responses:
+        "201":
+          description: User registered successfully
+        "400":
+          description: Bad request - Invalid input data
+        "409":
+          description: Conflict - Username or email already exists
 
 components:
   securitySchemes:
@@ -101,3 +122,18 @@ components:
             $ref: '#/components/schemas/MovieDto'
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDto'
+    RegisterUserRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        password:
+          type: string
+          format: password
+          example: "Password123!"
+          minLength: 8
+          maxLength: 100
+          description: "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character"
+      required: ["email", "password"]

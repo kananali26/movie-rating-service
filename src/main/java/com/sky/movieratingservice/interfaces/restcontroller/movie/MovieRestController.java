@@ -1,4 +1,4 @@
-package com.sky.movieratingservice.interfaces.restcontroller;
+package com.sky.movieratingservice.interfaces.restcontroller.movie;
 
 import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.domain.PagedResult;
