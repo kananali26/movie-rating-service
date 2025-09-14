@@ -1,0 +1,37 @@
+package com.sky.movieratingservice.usecases.user;
+
+import com.sky.movieratingservice.domain.User;
+import com.sky.movieratingservice.domain.exception.InvalidRequestException;
+import com.sky.movieratingservice.domain.exception.NotFoundException;
+import com.sky.movieratingservice.usecases.TokenProvider;
+import com.sky.movieratingservice.usecases.repositories.UserRepository;
+import java.time.Duration;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthenticateUserUseCase {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+
+    public String authenticate(String email, String password) {
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            throw new NotFoundException("User not found"); // update later
+        }
+
+        if (!passwordEncoder.matches(password, optionalUser.get().getPassword())) {
+            throw new InvalidRequestException("Bad credentials");
+        }
+
+        return tokenProvider.issue(optionalUser.get(), Duration.ofMinutes(15));
+
+    }
+}

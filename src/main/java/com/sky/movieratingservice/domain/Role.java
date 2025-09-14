@@ -1,9 +1,6 @@
 package com.sky.movieratingservice.domain;
 
-import lombok.Data;
+import java.util.List;
 
-@Data
-public class Role {
-    private Long id;
-    private String name;
+public record Role(Long id, String name, List<Privilege> privileges) {
 }

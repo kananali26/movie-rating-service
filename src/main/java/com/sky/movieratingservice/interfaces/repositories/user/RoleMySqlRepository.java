@@ -1,4 +1,4 @@
-package com.sky.movieratingservice.interfaces.repositories.role;
+package com.sky.movieratingservice.interfaces.repositories.user;
 
 import com.sky.movieratingservice.domain.Role;
 import com.sky.movieratingservice.usecases.repositories.RoleRepository;
@@ -11,15 +11,12 @@ import org.springframework.stereotype.Component;
 class RoleMySqlRepository implements RoleRepository {
 
     private final RoleJpaRepository roleJpaRepository;
+    private final RoleDboToRoleConverter roleDboToRoleConverter;
 
     @Override
     public Optional<Role> getByName(String name) {
-        return roleJpaRepository.findByName(name)
-                .map(roleDbo -> {
-                    Role role = new Role();
-                    role.setId(roleDbo.getId());
-                    role.setName(roleDbo.getName());
-                    return role;
-                });
+        return roleJpaRepository
+                .findByName(name)
+                .map(roleDboToRoleConverter::convert);
     }
 }
