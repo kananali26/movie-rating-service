@@ -1,7 +1,7 @@
-package com.sky.movieratingservice.interfaces.repositories.user;
+package com.sky.movieratingservice.interfaces.repositories.role;
 
 import com.sky.movieratingservice.interfaces.repositories.BaseDbo;
-import com.sky.movieratingservice.interfaces.repositories.role.RoleDbo;
+import com.sky.movieratingservice.interfaces.repositories.user.PrivilegeDbo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -17,22 +17,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "USERS")
+@Table(name = "ROLES")
 @Entity
-public class UserDbo extends BaseDbo {
+public class RoleDbo extends BaseDbo {
 
     @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
+    private String name;
 
     @ManyToMany
     @JoinTable(
-            name = "users_roles",
+            name = "roles_privileges",
             joinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName = "id"),
+                    name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"))
-    private List<RoleDbo> roles;
+                    name = "privilege_id", referencedColumnName = "id"))
+    private List<PrivilegeDbo> privileges;
 }

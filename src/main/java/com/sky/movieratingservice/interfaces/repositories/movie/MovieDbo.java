@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "movie")
+@Table(name = "MOVIES")
 @Entity
 public class MovieDbo extends BaseDbo {
 

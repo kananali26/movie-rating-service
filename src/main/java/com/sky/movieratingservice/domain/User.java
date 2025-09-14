@@ -21,7 +21,7 @@ public class User {
     public User(String id, String email, String password) {
         this(id, email, password, new HashSet<>());
         // By default, add USER role
-        this.roles.add(Role.USER);
+//        this.roles.add(Role.USER);
     }
 
     /**
