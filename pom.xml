@@ -22,6 +22,8 @@
         <flyway-version>10.16.0</flyway-version>
         <mysql-connector-java.version>8.0.30</mysql-connector-java.version>
 
+        <jjwt.version>0.12.6</jjwt.version>
+
         <openapi-generator-version>7.6.0</openapi-generator-version>
         <openapi-jackson-databind-nullable-version>0.2.6</openapi-jackson-databind-nullable-version>
         <openapi-ui-version>2.1.0</openapi-ui-version>
@@ -66,6 +68,22 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
         </dependency>
 
         <!-- temporary database -->

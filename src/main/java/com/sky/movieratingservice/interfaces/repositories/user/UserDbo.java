@@ -1,7 +1,6 @@
 package com.sky.movieratingservice.interfaces.repositories.user;
 
 import com.sky.movieratingservice.interfaces.repositories.BaseDbo;
-import com.sky.movieratingservice.interfaces.repositories.role.RoleDbo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
