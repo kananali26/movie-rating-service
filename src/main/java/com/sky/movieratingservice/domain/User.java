@@ -6,21 +6,18 @@ import lombok.Getter;
 
 @Getter
 public class User {
-    private final String id;
+    private final Long id;
     private String email;
     private String password;
     private List<Role> roles;
 
-    public User(String id, String email, String password) {
+    public User(Long id, String email, String password) {
         this(id, email, password, new ArrayList<>());
         // By default, add USER role
 //        this.roles.add(Role.USER);
     }
 
-    public User(String id, String email, String password, List<Role> roles) {
-        if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("User ID cannot be null or empty");
-        }
+    public User(Long id, String email, String password, List<Role> roles) {
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("User email cannot be null or empty");
         }

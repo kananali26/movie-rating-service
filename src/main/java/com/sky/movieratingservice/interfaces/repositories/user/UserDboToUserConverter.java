@@ -18,6 +18,6 @@ class UserDboToUserConverter {
                 .map(roleDboToRoleConverter::convert)
                 .toList();
 
-        return new User(dbo.getId().toString(), dbo.getEmail(), dbo.getPassword(), roles);
+        return new User(dbo.getId(), dbo.getEmail(), dbo.getPassword(), roles);
     }
 }

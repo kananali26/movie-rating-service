@@ -51,6 +51,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/MovieListResponseDto'
           description: Successfully retrieved the list of movies
+
+  /api/v1/movies/{movieId}/ratings:
+    post:
+      operationId: rateMovie
+      summary: Rate a movie
+      description: Endpoint to rate a movie with a value between 1 and 10
+      tags:
+        - Movie
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: movieId
+          required: true
+          schema:
+            type: integer
+          description: ID of the movie to rate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateMovieRequestDto'
+      responses:
+        "200":
+          description: Movie rated successfully
+    delete:
+      operationId: deleteMovieRating
+      summary: Delete a movie rating
+      description: Endpoint to delete a rating for a specific movie
+      tags:
+        - Movie
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: movieId
+          required: true
+          schema:
+            type: integer
+          description: ID of the movie to delete rating for
+      responses:
+        "200":
+          description: Movie rating deleted successfully
+
   /api/v1/users/register:
     post:
       operationId: registerUser
@@ -72,6 +117,31 @@ paths:
           description: Bad request - Invalid input data
         "409":
           description: Conflict - Username or email already exists
+  /api/v1/movies/top-rated:
+    get:
+      operationId: getTopRatedMovies
+      summary: Get Top Rated Movies
+      description: Endpoint to retrieve a list of top rated movies
+      tags:
+        - Movie
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 100
+          description: Number of top rated movies to return
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieListResponseDto'
+          description: Successfully retrieved the list of top rated movies
+  
   /api/v1/auth/login:
     post:
       operationId: login
@@ -97,7 +167,6 @@ paths:
           description: Authentication failed
         "400":
           description: Bad request - Invalid input data
-
 
 components:
   securitySchemes:
@@ -139,6 +208,13 @@ components:
         name:
           type: string
           example: "The Shawshank Redemption"
+        ratingCount:
+          type: integer
+          description: "Number of ratings the movie has received"
+        averageRating:
+          type: string
+          format: number
+          description: "Average rating of the movie"
     MovieListResponseDto:
       type: object
       properties:
@@ -189,3 +265,12 @@ components:
           maxLength: 100
           description: "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character"
       required: ["email", "password"]
+    RateMovieRequestDto:
+      type: object
+      properties:
+        value:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 8
+      required: [ "value" ]

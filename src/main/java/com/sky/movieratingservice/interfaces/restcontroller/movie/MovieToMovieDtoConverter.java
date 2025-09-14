@@ -9,8 +9,10 @@ class MovieToMovieDtoConverter {
 
     public MovieDto convert(Movie movie) {
         return MovieDto.builder()
-                .id((int) movie.getId())
-                .name(movie.getName())
+                .id((int) movie.id())
+                .name(movie.name())
+                .ratingCount(movie.ratingCount())
+                .averageRating(movie.averageRating())
                 .build();
     }
 }
