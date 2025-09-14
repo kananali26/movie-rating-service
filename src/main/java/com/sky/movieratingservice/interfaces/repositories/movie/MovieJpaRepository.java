@@ -1,7 +1,9 @@
 package com.sky.movieratingservice.interfaces.repositories.movie;
 
+import java.util.List;
 import java.util.Objects;
 import java.math.BigDecimal;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -17,6 +19,9 @@ interface MovieJpaRepository extends JpaRepository<MovieDbo, Long>, JpaSpecifica
     @Transactional
     @Query("UPDATE MovieDbo m SET m.ratingCount = :count, m.averageRating = :average WHERE m.id = :id")
     void updateRatingCountAndAverageById(Long id, Integer count, BigDecimal average);
+
+    @Query("SELECT m FROM MovieDbo m ORDER BY m.averageRating DESC")
+    List<MovieDbo> findTopRatedMovies(Pageable pageable);
 
 
     interface Specifications {

@@ -4,6 +4,7 @@ import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.domain.PagedResult;
 import com.sky.movieratingservice.domain.exception.NotFoundException;
 import com.sky.movieratingservice.usecases.repositories.MovieRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,11 @@ public class GetMovieUseCase {
 
         // Call repository to get movies and return the domain object directly
         return movieRepository.getMovies(name, pageNumber, pageSize);
+    }
+
+    public List<Movie> getTopRatedMovies(int limit) {
+        log.info("Getting top rated movies with limit: {}", limit);
+        return movieRepository.getTopRatedMovies(limit);
     }
 
     public Movie getMovie(long movieId) {

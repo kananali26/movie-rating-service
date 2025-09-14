@@ -50,5 +50,15 @@ class MovieMySqlRepository implements MovieRepository {
         movieJpaRepository.updateRatingCountAndAverageById(movieId, newCount, newAverage);
     }
 
+    @Override
+    public List<Movie> getTopRatedMovies(int topN) {
+        PageRequest pageRequest = PageRequest.of(0, topN);
+        List<MovieDbo> movieDboList = movieJpaRepository.findTopRatedMovies(pageRequest);
+
+        return movieDboList.stream()
+                .map(movieConverter::convert)
+                .toList();
+    }
+
 
 }

@@ -117,6 +117,31 @@ paths:
           description: Bad request - Invalid input data
         "409":
           description: Conflict - Username or email already exists
+  /api/v1/movies/top-rated:
+    get:
+      operationId: getTopRatedMovies
+      summary: Get Top Rated Movies
+      description: Endpoint to retrieve a list of top rated movies
+      tags:
+        - Movie
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 100
+          description: Number of top rated movies to return
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieListResponseDto'
+          description: Successfully retrieved the list of top rated movies
+  
   /api/v1/auth/login:
     post:
       operationId: login
@@ -183,6 +208,13 @@ components:
         name:
           type: string
           example: "The Shawshank Redemption"
+        ratingCount:
+          type: integer
+          description: "Number of ratings the movie has received"
+        averageRating:
+          type: string
+          format: number
+          description: "Average rating of the movie"
     MovieListResponseDto:
       type: object
       properties:

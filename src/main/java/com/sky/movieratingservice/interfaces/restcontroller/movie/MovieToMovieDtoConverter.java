@@ -11,6 +11,8 @@ class MovieToMovieDtoConverter {
         return MovieDto.builder()
                 .id((int) movie.id())
                 .name(movie.name())
+                .ratingCount(movie.ratingCount())
+                .averageRating(movie.averageRating())
                 .build();
     }
 }
