@@ -3,8 +3,9 @@ package com.sky.movieratingservice.interfaces.repositories.movie;
 import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.domain.PagedResult;
 import com.sky.movieratingservice.usecases.repositories.MovieRepository;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +28,7 @@ class MovieMySqlRepository implements MovieRepository {
 
         List<Movie> movies = movieDbosPage.getContent().stream()
             .map(movieConverter::convert)
-            .collect(Collectors.toList());
+            .toList();
 
         return new PagedResult<>(
             movies,
@@ -38,16 +39,16 @@ class MovieMySqlRepository implements MovieRepository {
     }
 
     @Override
-    public Movie createMovie(String name) {
-        // Create a new MovieDbo object
-        MovieDbo movieDbo = new MovieDbo();
-        movieDbo.setName(name);
-
-        // Save the MovieDbo object to the database
-        MovieDbo savedMovieDbo = movieJpaRepository.save(movieDbo);
-
-        // Convert the saved MovieDbo to a domain Movie object and return it
-        return movieConverter.convert(savedMovieDbo);
+    public Optional<Movie> getMovie(long movieId) {
+        return movieJpaRepository
+                .findById(movieId)
+                .map(movieConverter::convert);
     }
+
+    @Override
+    public void updateRatingCountAndAverage(long movieId, int newCount, BigDecimal newAverage) {
+        movieJpaRepository.updateRatingCountAndAverageById(movieId, newCount, newAverage);
+    }
+
 
 }

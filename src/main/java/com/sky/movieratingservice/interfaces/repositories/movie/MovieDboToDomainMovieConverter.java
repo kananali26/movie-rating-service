@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 class MovieDboToDomainMovieConverter {
 
     public Movie convert(MovieDbo movieDbo) {
-        return new Movie(movieDbo.getId(), movieDbo.getName());
+        return new Movie(movieDbo.getId(), movieDbo.getName(), movieDbo.getRatingCount(), movieDbo.getAverageRating());
     }
 }

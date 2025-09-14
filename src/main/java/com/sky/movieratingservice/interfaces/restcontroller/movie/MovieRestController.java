@@ -4,7 +4,10 @@ import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.domain.PagedResult;
 import com.sky.movieratingservice.openapi.interfaces.rest.MovieApi;
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.MovieListResponseDto;
+import com.sky.movieratingservice.openapi.interfaces.rest.dtos.RateMovieRequestDto;
 import com.sky.movieratingservice.usecases.movie.GetMovieUseCase;
+import com.sky.movieratingservice.usecases.rating.DeleteMovieRatingUseCase;
+import com.sky.movieratingservice.usecases.rating.RateMovieUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieRestController implements MovieApi {
 
     private final GetMovieUseCase getMovieUseCase;
+    private final RateMovieUseCase rateMovieUseCase;
+    private final DeleteMovieRatingUseCase deleteMovieRatingUseCase;
     private final PagedResultToMovieListResponseDtoConverter pagedResultConverter;
 
     @Override
@@ -29,5 +34,18 @@ public class MovieRestController implements MovieApi {
         MovieListResponseDto response = pagedResultConverter.convert(pagedResult);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> rateMovie(Integer movieId, RateMovieRequestDto rateMovieRequestDto) {
+        // we should get email from security context in real application
+        rateMovieUseCase.rateMovie("john.doe@example.com", movieId, rateMovieRequestDto.getValue());
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteMovieRating(Integer movieId) {
+        deleteMovieRatingUseCase.deleteMovieRating(movieId, "john.doe@example.com");
+        return ResponseEntity.ok().build();
     }
 }
