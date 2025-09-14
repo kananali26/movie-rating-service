@@ -1,6 +1,9 @@
 package com.sky.movieratingservice.domain;
 
-public enum Role {
-    USER,
-    ADMIN
+import lombok.Data;
+
+@Data
+public class Role {
+    private Long id;
+    private String name;
 }
