@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 class MovieMySqlRepository implements MovieRepository {
 
     private final MovieJpaRepository movieJpaRepository;
-    private final MovieDboToDomainMovieConverter movieConverter;
+    private final MovieDboToMovieConverter movieConverter;
 
     @Override
     public void createMovie(String name) {
@@ -24,6 +24,7 @@ class MovieMySqlRepository implements MovieRepository {
         movieDbo.setName(name);
         movieDbo.setRatingCount(0);
         movieDbo.setAverageRating(BigDecimal.ZERO);
+
         movieJpaRepository.save(movieDbo);
     }
 

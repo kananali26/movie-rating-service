@@ -71,8 +71,6 @@ paths:
       description: Endpoint to rate a movie with a value between 1 and 10
       tags:
         - Movie
-#      security:
-#        - bearerAuth: [ ]
       parameters:
         - in: path
           name: movieId
@@ -95,8 +93,6 @@ paths:
       description: Endpoint to delete a rating for a specific movie
       tags:
         - Movie
-#      security:
-#        - bearerAuth: [ ]
       parameters:
         - in: path
           name: movieId
@@ -136,8 +132,6 @@ paths:
       description: Endpoint to retrieve a list of top rated movies
       tags:
         - Movie
-#      security:
-#        - bearerAuth: [ ]
       parameters:
         - in: query
           name: limit

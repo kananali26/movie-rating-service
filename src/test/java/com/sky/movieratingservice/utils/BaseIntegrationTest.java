@@ -47,7 +47,6 @@ public abstract class BaseIntegrationTest {
         mockServerContainer.start();
     }
 
-
     @SneakyThrows
     public void executeQuery(String sql) {
         try (Connection connection = dataSource.getConnection()) {

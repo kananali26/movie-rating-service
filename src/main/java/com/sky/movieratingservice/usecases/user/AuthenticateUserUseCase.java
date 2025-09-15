@@ -2,7 +2,6 @@ package com.sky.movieratingservice.usecases.user;
 
 import com.sky.movieratingservice.domain.User;
 import com.sky.movieratingservice.domain.exception.InvalidRequestException;
-import com.sky.movieratingservice.domain.exception.NotFoundException;
 import com.sky.movieratingservice.usecases.PasswordHasher;
 import com.sky.movieratingservice.usecases.TokenProvider;
 import com.sky.movieratingservice.usecases.repositories.UserRepository;
@@ -20,18 +19,12 @@ public class AuthenticateUserUseCase {
     private final PasswordHasher passwordHasher;
 
     public String authenticate(String email, String password) {
-
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User not found"); // update later
-        }
-
-        if (!passwordHasher.matches(password.toCharArray(), optionalUser.get().password())) {
+        if (optionalUser.isEmpty() || !passwordHasher.matches(password.toCharArray(), optionalUser.get().password())) {
             throw new InvalidRequestException("Bad credentials");
         }
 
         return tokenProvider.issue(optionalUser.get(), Duration.ofMinutes(15));
-
     }
 }
