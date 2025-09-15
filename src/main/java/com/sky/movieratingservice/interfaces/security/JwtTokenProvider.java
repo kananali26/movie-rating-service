@@ -2,9 +2,12 @@ package com.sky.movieratingservice.interfaces.security;
 
 import com.sky.movieratingservice.domain.User;
 import com.sky.movieratingservice.usecases.TokenProvider;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -14,24 +17,59 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider implements TokenProvider {
 
-//    @Value("${security.jwt.secret-base64}")
-    private String secretB64 = "secretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasda";
+    private final Key signingKey;
+    private final Clock clock;
+    private final long expirationMinutes;
 
-//    @Value("${security.jwt.ttl-seconds:900}")
-    private long ttl = 900;
+    public JwtTokenProvider(@Value("${app.jwt.secret}") String secret,
+                            @Value("${app.jwt.expiration-minutes:60}") long expirationMinutes,
+                            Clock clock) {
+
+        if (secret == null || secret.length() < 32) {
+            throw new IllegalArgumentException("JWT secret must be configured and at least 32 characters long");
+        }
+
+        this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        this.expirationMinutes = expirationMinutes;
+        this.clock = clock;
+    }
 
     @Override
     public String issue(User user, Duration ttl) {
-        var now = Instant.now();
+        var now = Instant.now(clock);
+        Instant expiry = now.plus(ttl != null ? ttl : Duration.ofMinutes(expirationMinutes));
+
         var roles = user.getRoles().stream().toList();
-        long exp = ttl != null ? ttl.toSeconds() : 1;
+
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("roles", roles)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(exp)))
-                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretB64)))
+                .expiration(Date.from(expiry))
+                .signWith(signingKey)
                 .compact();
+    }
+
+    @Override
+    public boolean validate(String token, String subject) {
+        String username = extractUsername(token);
+        return username.equals(subject) && !isTokenExpired(token);
+    }
+
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(signingKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
 }
