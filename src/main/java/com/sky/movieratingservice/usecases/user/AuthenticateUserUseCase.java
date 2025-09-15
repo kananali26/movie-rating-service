@@ -27,7 +27,7 @@ public class AuthenticateUserUseCase {
             throw new NotFoundException("User not found"); // update later
         }
 
-        if (!passwordHasher.matches(password.toCharArray(), optionalUser.get().getPassword())) {
+        if (!passwordHasher.matches(password.toCharArray(), optionalUser.get().password())) {
             throw new InvalidRequestException("Bad credentials");
         }
 

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: movie-rating-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: movie_rating
+      MYSQL_USER: movieuser
+      MYSQL_PASSWORD: moviepassword
+    volumes:
+      - mysql-data10:/var/lib/mysql
+    networks:
+      - movie-rating-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  movie-rating-network:
+    driver: bridge
+
+volumes:
+  mysql-data10:

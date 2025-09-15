@@ -39,10 +39,10 @@ public class JwtTokenProvider implements TokenProvider {
         var now = Instant.now(clock);
         Instant expiry = now.plus(ttl != null ? ttl : Duration.ofMinutes(expirationMinutes));
 
-        var roles = user.getRoles().stream().toList();
+        var roles = user.roles().stream().toList();
 
         return Jwts.builder()
-                .subject(user.getEmail())
+                .subject(user.email())
                 .claim("roles", roles)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiry))

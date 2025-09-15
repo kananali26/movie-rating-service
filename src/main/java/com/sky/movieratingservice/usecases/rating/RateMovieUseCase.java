@@ -4,7 +4,7 @@ import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.domain.Rating;
 import com.sky.movieratingservice.domain.User;
 import com.sky.movieratingservice.usecases.movie.GetMovieUseCase;
-import com.sky.movieratingservice.usecases.movie.UpdateMovieUseCase;
+import com.sky.movieratingservice.usecases.movie.UpsertMovieUseCase;
 import com.sky.movieratingservice.usecases.repositories.RatingRepository;
 import com.sky.movieratingservice.usecases.user.GetUserUseCase;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class RateMovieUseCase {
 
     private final GetUserUseCase getUserUseCase;
     private final GetMovieUseCase getMovieUseCase;
-    private final UpdateMovieUseCase updateMovieUseCase;
+    private final UpsertMovieUseCase upsertMovieUseCase;
     private final RatingRepository ratingRepository;
 
     @Transactional
@@ -27,10 +27,10 @@ public class RateMovieUseCase {
 
         Rating rating = new Rating(user, movie, value);
 
-        boolean isExists = ratingRepository.existsByMovieIdAndUserId(movieId, user.getId());
+        boolean isExists = ratingRepository.existsByMovieIdAndUserId(movieId, user.id());
 
         if (isExists) {
-            int oldValue = ratingRepository.getRatingValue(movieId, user.getEmail()).get();
+            int oldValue = ratingRepository.getRatingValue(movieId, user.email()).get();
 
             ratingRepository.update(rating);
             movie = movie.updateRating(oldValue, value);
@@ -39,6 +39,6 @@ public class RateMovieUseCase {
             movie = movie.addRating(value);
         }
 
-        updateMovieUseCase.update(movieId, movie.ratingCount(), movie.averageRating());
+        upsertMovieUseCase.update(movieId, movie.ratingCount(), movie.averageRating());
     }
 }

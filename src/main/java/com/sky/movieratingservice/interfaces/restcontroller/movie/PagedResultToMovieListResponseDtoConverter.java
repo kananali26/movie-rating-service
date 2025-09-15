@@ -1,10 +1,9 @@
 package com.sky.movieratingservice.interfaces.restcontroller.movie;
 
 import com.sky.movieratingservice.domain.Movie;
-import com.sky.movieratingservice.domain.PagedResult;
+import com.sky.movieratingservice.domain.PaginatedResult;
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.MovieListResponseDto;
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.PaginationInfoDto;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,19 +13,19 @@ class PagedResultToMovieListResponseDtoConverter {
 
     private final MovieToMovieDtoConverter movieToMovieDtoConverter;
 
-    public MovieListResponseDto convert(PagedResult<Movie> pagedResult) {
+    public MovieListResponseDto convert(PaginatedResult<Movie> paginatedResult) {
         // Map pagination info
         PaginationInfoDto paginationDto = new PaginationInfoDto()
-                .pageNumber(pagedResult.getPageNumber())
-                .pageSize(pagedResult.getPageSize())
-                .totalRecords((int) pagedResult.getTotalElements());
+                .pageNumber(paginatedResult.pageNumber())
+                .pageSize(paginatedResult.pageSize())
+                .totalRecords((int) paginatedResult.totalElements());
 
         // Build and return the response DTO
         return MovieListResponseDto.builder()
                 .paginationInfo(paginationDto)
-                .movies(pagedResult.getContent().stream()
+                .movies(paginatedResult.content().stream()
                         .map(movieToMovieDtoConverter::convert)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 }

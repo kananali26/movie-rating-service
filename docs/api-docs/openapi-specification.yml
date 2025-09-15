@@ -9,7 +9,7 @@ servers:
     description: localhost
 
 security:
-  - bearerAuth: []
+  - BearerAuth: [ ]
 
 paths:
   /api/v1/movies:
@@ -19,8 +19,6 @@ paths:
       description: Endpoint to retrieve a paginated list of movies
       tags:
         - Movie
-      security:
-        - bearerAuth: []
       parameters:
         - in: query
           name: pageNumber
@@ -35,8 +33,6 @@ paths:
           schema:
             type: integer
             default: 10
-            minimum: 0
-            maximum: 100
           description: Number of items per page
         - in: query
           name: name
@@ -51,6 +47,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/MovieListResponseDto'
           description: Successfully retrieved the list of movies
+    post:
+      operationId: createMovie
+      summary: Create Movie
+      description: Endpoint to create a new movie
+      tags:
+        - Movie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMovieRequestDto'
+      responses:
+        "201":
+          description: Movie created successfully
+
 
   /api/v1/movies/{movieId}/ratings:
     post:
@@ -59,8 +71,8 @@ paths:
       description: Endpoint to rate a movie with a value between 1 and 10
       tags:
         - Movie
-      security:
-        - bearerAuth: [ ]
+#      security:
+#        - bearerAuth: [ ]
       parameters:
         - in: path
           name: movieId
@@ -83,8 +95,8 @@ paths:
       description: Endpoint to delete a rating for a specific movie
       tags:
         - Movie
-      security:
-        - bearerAuth: [ ]
+#      security:
+#        - bearerAuth: [ ]
       parameters:
         - in: path
           name: movieId
@@ -103,7 +115,7 @@ paths:
       description: Endpoint to register a new user
       tags:
         - User
-      security: [ ]  # No authentication required for registration
+#      security: [ ]  # No authentication required for registration
       requestBody:
         required: true
         content:
@@ -124,8 +136,8 @@ paths:
       description: Endpoint to retrieve a list of top rated movies
       tags:
         - Movie
-      security:
-        - bearerAuth: [ ]
+#      security:
+#        - bearerAuth: [ ]
       parameters:
         - in: query
           name: limit
@@ -149,7 +161,7 @@ paths:
       description: Endpoint to authenticate user and receive JWT token
       tags:
         - Authentication
-      security: [ ]
+#      security: [ ]
       requestBody:
         required: true
         content:
@@ -170,7 +182,7 @@ paths:
 
 components:
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
@@ -242,14 +254,6 @@ components:
         accessToken:
           type: string
           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        tokenType:
-          type: string
-          example: "Bearer"
-        expiresIn:
-          type: integer
-          description: "Token expiration time in seconds"
-          example: 3600
-      required: [ "accessToken", "tokenType", "expiresIn" ]
     RegisterUserRequestDto:
       type: object
       properties:

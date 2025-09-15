@@ -1,5 +1,7 @@
 package com.sky.movieratingservice.configuration;
 
+import com.sky.movieratingservice.interfaces.security.CustomAccessDeniedHandler;
+import com.sky.movieratingservice.interfaces.security.JwtAuthenticationEntryPoint;
 import com.sky.movieratingservice.interfaces.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,13 +25,13 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private static final RequestMatcher[] PUBLIC_ENDPOINTS = {
             new AntPathRequestMatcher("/actuator/**"),
-            new AntPathRequestMatcher("/api/v1/movies"),
             new AntPathRequestMatcher("/api/v1/movies/top-rated"),
             new AntPathRequestMatcher("/api/v1/users/register"),
-            new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/swagger-ui.html"),
             new AntPathRequestMatcher("/v3/api-docs/**"),
@@ -45,7 +47,10 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(provide())
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST,   "/api/v1/movies/*/ratings").hasAuthority("WRITE")
+                        .requestMatchers(HttpMethod.POST,   "/api/v1/movies/*/ratings").hasAuthority("RATE_MOVIE")
+                        .requestMatchers(HttpMethod.DELETE,   "/api/v1/movies/*/ratings").hasAuthority("DELETE_MOVIE_RATING")
+                        .requestMatchers(HttpMethod.GET,   "/api/v1/movies").permitAll()
+                        .requestMatchers(HttpMethod.POST,   "/api/v1/movies").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated())
                 .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
@@ -53,6 +58,9 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 .logout(AbstractHttpConfigurer::disable);
         return http.build();
     }

@@ -2,11 +2,12 @@ package com.sky.movieratingservice.usecases.rating;
 
 import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.usecases.movie.GetMovieUseCase;
-import com.sky.movieratingservice.usecases.movie.UpdateMovieUseCase;
+import com.sky.movieratingservice.usecases.movie.UpsertMovieUseCase;
 import com.sky.movieratingservice.usecases.repositories.RatingRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +15,9 @@ public class DeleteMovieRatingUseCase {
 
     private final RatingRepository ratingRepository;
     private final GetMovieUseCase getMovieUseCase;
-    private final UpdateMovieUseCase updateMovieUseCase;
+    private final UpsertMovieUseCase upsertMovieUseCase;
 
+    @Transactional
     public void deleteMovieRating(long movieId, String email) {
         Movie movie = getMovieUseCase.getMovie(movieId);
 
@@ -29,6 +31,6 @@ public class DeleteMovieRatingUseCase {
 
         movie = movie.removeRating(optionalInteger.get());
 
-        updateMovieUseCase.update(movieId, movie.ratingCount(), movie.averageRating());
+        upsertMovieUseCase.update(movieId, movie.ratingCount(), movie.averageRating());
     }
 }

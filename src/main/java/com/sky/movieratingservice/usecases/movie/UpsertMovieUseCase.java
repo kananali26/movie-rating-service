@@ -7,9 +7,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateMovieUseCase {
+public class UpsertMovieUseCase {
 
     private final MovieRepository movieRepository;
+
+    public void create(String name) {
+        movieRepository.createMovie(name);
+    }
 
     public void update(long movieId, int newCount, BigDecimal newAverage) {
         movieRepository.updateRatingCountAndAverage(movieId, newCount, newAverage);
