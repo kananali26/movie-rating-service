@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "PRIVILEGES")
+@Table(name = "privileges")
 @Entity
 public class PrivilegeDbo extends BaseDbo {
 

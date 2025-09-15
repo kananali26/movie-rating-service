@@ -9,7 +9,6 @@ public class ClockConfiguration {
 
     @Bean
     public Clock clock() {
-        // This ensures that in our application we always get the UTC clock
         return Clock.systemUTC();
     }
 }

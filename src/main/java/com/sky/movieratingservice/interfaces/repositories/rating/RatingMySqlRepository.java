@@ -18,13 +18,13 @@ class RatingMySqlRepository implements RatingRepository {
 
     @Override
     public void create(Rating rating) {
-        UserDbo userDbo = entityManager.getReference(UserDbo.class, rating.getUser().getId());
-        MovieDbo movieDbo = entityManager.getReference(MovieDbo.class, rating.getMovie().id());
+        UserDbo userDbo = entityManager.getReference(UserDbo.class, rating.user().id());
+        MovieDbo movieDbo = entityManager.getReference(MovieDbo.class, rating.movie().id());
 
         RatingDbo ratingDbo = new RatingDbo();
         ratingDbo.setUser(userDbo);
         ratingDbo.setMovie(movieDbo);
-        ratingDbo.setRating(rating.getValue());
+        ratingDbo.setRating(rating.value());
 
         ratingJpaRepository.save(ratingDbo);
     }
@@ -43,7 +43,7 @@ class RatingMySqlRepository implements RatingRepository {
 
     @Override
     public void update(Rating rating) {
-        ratingJpaRepository.updateRatingByMovieIdAndUserId(rating.getMovie().id(), rating.getUser().getId(), rating.getValue());
+        ratingJpaRepository.updateRatingByMovieIdAndUserId(rating.movie().id(), rating.user().id(), rating.value());
     }
 
     @Override

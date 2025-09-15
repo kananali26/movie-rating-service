@@ -5,23 +5,30 @@ spring:
     enabled: true
     locations: classpath:db/migration
   datasource:
-    url: jdbc:h2:mem:mydb
-    username: user
-    password: user
-    driverClassName: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/movie_rating
+    username: movieuser
+    password: moviepassword
   h2:
     console:
       enabled: true
   jpa:
     hibernate:
       ddl-auto: none
+    show-sql: true
 
 springdoc:
   api-docs:
     groups:
       enabled: true
   swagger-ui:
-    path: /api-docs.html
+    path: /swagger-ui.html
+#    operationsSorter: method
+#    tagsSorter: alpha
+#    display-request-duration: true
+#    use-root-path: true
+#    oauth:
+#      use-pkce-with-authorization-code-grant: true
 
 # get secret from secret-manager
 app:

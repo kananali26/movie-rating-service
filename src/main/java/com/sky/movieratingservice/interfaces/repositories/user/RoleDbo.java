@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "ROLES")
+@Table(name = "roles")
 @Entity
 public class RoleDbo extends BaseDbo {
 

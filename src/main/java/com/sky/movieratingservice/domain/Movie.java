@@ -7,12 +7,6 @@ import lombok.Builder;
 @Builder
 public record Movie(long id, String name, Integer ratingCount, BigDecimal averageRating) {
 
-    public Movie {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Movie title cannot be null or empty");
-        }
-    }
-
     public Movie addRating(int value) {
         BigDecimal newAverage = (averageRating.multiply(BigDecimal.valueOf(ratingCount))
                 .add(BigDecimal.valueOf(value)))

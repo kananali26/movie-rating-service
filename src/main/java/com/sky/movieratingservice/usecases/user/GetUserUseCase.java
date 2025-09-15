@@ -15,6 +15,6 @@ public class GetUserUseCase {
     public User getUser(String email) {
         return userRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found")); // update later
+                .orElseThrow(() -> new NotFoundException(String.format("User with email:%s not found", email)));
     }
 }

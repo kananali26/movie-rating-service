@@ -1,7 +1,7 @@
 package com.sky.movieratingservice.usecases.movie;
 
 import com.sky.movieratingservice.domain.Movie;
-import com.sky.movieratingservice.domain.PagedResult;
+import com.sky.movieratingservice.domain.PaginatedResult;
 import com.sky.movieratingservice.domain.exception.NotFoundException;
 import com.sky.movieratingservice.usecases.repositories.MovieRepository;
 import java.util.List;
@@ -16,21 +16,17 @@ public class GetMovieUseCase {
 
     private final MovieRepository movieRepository;
 
-    public PagedResult<Movie> getMovies(String name, int pageNumber, int pageSize) {
-        log.info("Getting movies with name filter: {}, page: {}, size: {}", name, pageNumber, pageSize);
-
-        // Call repository to get movies and return the domain object directly
+    public PaginatedResult<Movie> getMovies(String name, int pageNumber, int pageSize) {
         return movieRepository.getMovies(name, pageNumber, pageSize);
     }
 
     public List<Movie> getTopRatedMovies(int limit) {
-        log.info("Getting top rated movies with limit: {}", limit);
         return movieRepository.getTopRatedMovies(limit);
     }
 
     public Movie getMovie(long movieId) {
         return movieRepository
                 .getMovie(movieId)
-                .orElseThrow(() -> new NotFoundException("Movie not found")); // Update exception as needed
+                .orElseThrow(() -> new NotFoundException(String.format("Movie with id:%d not found", movieId)));
     }
 }

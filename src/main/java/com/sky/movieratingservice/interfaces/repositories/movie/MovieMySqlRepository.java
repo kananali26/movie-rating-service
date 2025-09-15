@@ -1,7 +1,7 @@
 package com.sky.movieratingservice.interfaces.repositories.movie;
 
 import com.sky.movieratingservice.domain.Movie;
-import com.sky.movieratingservice.domain.PagedResult;
+import com.sky.movieratingservice.domain.PaginatedResult;
 import com.sky.movieratingservice.usecases.repositories.MovieRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,13 +16,22 @@ import org.springframework.stereotype.Component;
 class MovieMySqlRepository implements MovieRepository {
 
     private final MovieJpaRepository movieJpaRepository;
-    private final MovieDboToDomainMovieConverter movieConverter;
+    private final MovieDboToMovieConverter movieConverter;
 
     @Override
-    public PagedResult<Movie> getMovies(String name, int pageNumber, int pageSize) {
+    public void createMovie(String name) {
+        MovieDbo movieDbo = new MovieDbo();
+        movieDbo.setName(name);
+        movieDbo.setRatingCount(0);
+        movieDbo.setAverageRating(BigDecimal.ZERO);
+
+        movieJpaRepository.save(movieDbo);
+    }
+
+    @Override
+    public PaginatedResult<Movie> getMovies(String name, int pageNumber, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
 
-        // Get the page of MovieDbo objects from the JPA repository
         Page<MovieDbo> movieDbosPage = movieJpaRepository.findAll(
             MovieJpaRepository.Specifications.filterByName(name), pageRequest);
 
@@ -30,12 +39,7 @@ class MovieMySqlRepository implements MovieRepository {
             .map(movieConverter::convert)
             .toList();
 
-        return new PagedResult<>(
-            movies,
-            pageNumber,
-            pageSize,
-            movieDbosPage.getTotalElements()
-        );
+        return new PaginatedResult<>(movies, pageNumber, pageSize, movieDbosPage.getTotalElements());
     }
 
     @Override
@@ -59,6 +63,5 @@ class MovieMySqlRepository implements MovieRepository {
                 .map(movieConverter::convert)
                 .toList();
     }
-
 
 }

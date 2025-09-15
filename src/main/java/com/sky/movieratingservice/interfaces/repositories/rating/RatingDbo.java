@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "RATINGS")
+@Table(name = "ratings")
 @Entity
 public class RatingDbo extends BaseDbo {
 

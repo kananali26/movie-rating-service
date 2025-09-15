@@ -23,7 +23,6 @@ interface MovieJpaRepository extends JpaRepository<MovieDbo, Long>, JpaSpecifica
     @Query("SELECT m FROM MovieDbo m ORDER BY m.averageRating DESC")
     List<MovieDbo> findTopRatedMovies(Pageable pageable);
 
-
     interface Specifications {
 
         @NonNull
