@@ -22,3 +22,8 @@ springdoc:
       enabled: true
   swagger-ui:
     path: /api-docs.html
+
+# get secret from secret-manager
+app:
+  jwt:
+    secret: secretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasdasecretasdasdasda

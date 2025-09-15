@@ -6,4 +6,6 @@ import java.time.Duration;
 public interface TokenProvider {
 
     String issue(User user, Duration ttl);
+
+    boolean validate(String token, String subject);
 }
