@@ -3,6 +3,13 @@ package com.sky.movieratingservice.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sky.movieratingservice.utils.configuration.MySqlConnectionConfiguration;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +52,30 @@ public abstract class BaseIntegrationTest {
         try (Connection connection = dataSource.getConnection()) {
             connection.prepareStatement(sql).execute();
         }
+    }
+
+    @SneakyThrows
+    public List<Map<String, Object>> fetchDbQueryResult(String sql) {
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet resultSet = connection.createStatement().executeQuery(sql);
+
+            return resultSetToList(resultSet);
+        }
+    }
+
+    public static List<Map<String, Object>> resultSetToList(ResultSet rs) throws SQLException {
+        List<Map<String, Object>> rows = new ArrayList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        while (rs.next()) {
+            Map<String, Object> row = new HashMap<>();
+            for (int i = 1; i <= columnCount; i++) {
+                row.put(metaData.getColumnLabel(i), rs.getObject(i));
+            }
+            rows.add(row);
+        }
+        return rows;
     }
 
 }
