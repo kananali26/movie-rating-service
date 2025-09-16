@@ -9,9 +9,6 @@ spring:
     url: jdbc:mysql://localhost:3306/movie_rating
     username: movieuser
     password: moviepassword
-  h2:
-    console:
-      enabled: true
   jpa:
     hibernate:
       ddl-auto: none

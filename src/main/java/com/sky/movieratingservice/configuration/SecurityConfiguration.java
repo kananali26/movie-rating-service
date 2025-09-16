@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
@@ -27,22 +26,10 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-
-    private static final RequestMatcher[] PUBLIC_ENDPOINTS = {
-            new AntPathRequestMatcher("/actuator/**"),
-            new AntPathRequestMatcher("/api/v1/movies/top-rated"),
-            new AntPathRequestMatcher("/api/v1/users/register"),
-            new AntPathRequestMatcher("/swagger-ui/**"),
-            new AntPathRequestMatcher("/swagger-ui.html"),
-            new AntPathRequestMatcher("/v3/api-docs/**"),
-            new AntPathRequestMatcher("/v3/api-docs.yaml"),
-            new AntPathRequestMatcher("/api-docs/**"),
-            new AntPathRequestMatcher("/api-docs.html"),
-            new AntPathRequestMatcher("/api/v1/auth/login")
-    };
+    private final PublicEndpointsConfiguration publicEndpointsConfiguration;
 
     public RequestMatcher[] provide() {
-        return PUBLIC_ENDPOINTS;
+        return publicEndpointsConfiguration.getPublicEndpoints();
     }
 
     @Bean
@@ -52,7 +39,6 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers(HttpMethod.POST,   "/api/v1/movies/*/ratings").hasAuthority("RATE_MOVIE")
                         .requestMatchers(HttpMethod.DELETE,   "/api/v1/movies/*/ratings").hasAuthority("DELETE_MOVIE_RATING")
-                        .requestMatchers(HttpMethod.GET,   "/api/v1/movies").permitAll()
                         .requestMatchers(HttpMethod.POST,   "/api/v1/movies").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated())

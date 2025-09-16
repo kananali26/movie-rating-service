@@ -26,6 +26,7 @@ paths:
           schema:
             type: integer
             default: 0
+            minimum: 0
           description: Page number (zero-based)
         - in: query
           name: pageSize
@@ -33,6 +34,7 @@ paths:
           schema:
             type: integer
             default: 10
+            minimum: 1
           description: Number of items per page
         - in: query
           name: name
@@ -245,7 +247,7 @@ components:
     TokenResponseDto:
       type: object
       properties:
-        accessToken:
+        token:
           type: string
           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     RegisterUserRequestDto:
