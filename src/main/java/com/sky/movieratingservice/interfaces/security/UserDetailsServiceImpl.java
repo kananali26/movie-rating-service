@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
@@ -42,6 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         List<String> privileges = new ArrayList<>();
         List<Privilege> collection = new ArrayList<>();
+
         for (Role role : roles) {
             privileges.add(role.name());
             collection.addAll(role.privileges());

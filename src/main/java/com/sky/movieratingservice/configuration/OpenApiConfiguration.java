@@ -23,7 +23,7 @@ public class OpenApiConfiguration {
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
-                                        .description("JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"")
+                                        .description("JWT Authorization header using the Bearer scheme")
                         )
                 );
     }

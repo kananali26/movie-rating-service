@@ -14,13 +14,11 @@ class PagedResultToMovieListResponseDtoConverter {
     private final MovieToMovieDtoConverter movieToMovieDtoConverter;
 
     public MovieListResponseDto convert(PaginatedResult<Movie> paginatedResult) {
-        // Map pagination info
         PaginationInfoDto paginationDto = new PaginationInfoDto()
                 .pageNumber(paginatedResult.pageNumber())
                 .pageSize(paginatedResult.pageSize())
                 .totalRecords((int) paginatedResult.totalElements());
 
-        // Build and return the response DTO
         return MovieListResponseDto.builder()
                 .paginationInfo(paginationDto)
                 .movies(paginatedResult.content().stream()

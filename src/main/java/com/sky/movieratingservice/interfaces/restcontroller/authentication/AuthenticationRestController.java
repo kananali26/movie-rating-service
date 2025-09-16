@@ -19,8 +19,7 @@ public class AuthenticationRestController implements AuthenticationApi {
     @Override
     public ResponseEntity<TokenResponseDto> login(LoginRequestDto loginRequestDto) {
         String token = authenticateUserUseCase.authenticate(loginRequestDto.getEmail(), loginRequestDto.getPassword());
-        TokenResponseDto tokenResponseDto = new TokenResponseDto();
-        tokenResponseDto.token(token);
+        TokenResponseDto tokenResponseDto = TokenResponseDto.builder().token(token).build();
         return ResponseEntity.ok(tokenResponseDto);
     }
 }
