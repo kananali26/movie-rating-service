@@ -20,9 +20,10 @@ class UserRestControllerIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void cleanUp() {
-        executeQuery("INSERT INTO roles (name) VALUES ('ROLE_USER');");
         executeQuery("DELETE FROM users_roles;");
         executeQuery("DELETE FROM users;");
+        executeQuery("DELETE FROM roles;");
+        executeQuery("INSERT INTO roles (name) VALUES ('ROLE_USER');");
     }
 
     @Test

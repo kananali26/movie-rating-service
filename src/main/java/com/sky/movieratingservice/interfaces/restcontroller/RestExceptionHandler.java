@@ -2,6 +2,7 @@ package com.sky.movieratingservice.interfaces.restcontroller;
 
 import com.sky.movieratingservice.domain.exception.InvalidRequestException;
 import com.sky.movieratingservice.domain.exception.NotFoundException;
+import com.sky.movieratingservice.domain.exception.UnauthorizedException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +71,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiErrorResponseDto> handleUnauthorizedException(UnauthorizedException ex) {
+        ApiErrorResponseDto errorDto = ApiErrorResponseDto.builder()
+                .errorCode("UNAUTHORIZED")
+                .errorMessage(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
     }
 
 }
