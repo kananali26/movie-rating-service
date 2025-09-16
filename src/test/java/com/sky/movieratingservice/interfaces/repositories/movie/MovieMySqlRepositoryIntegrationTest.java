@@ -7,7 +7,7 @@ import com.sky.movieratingservice.utils.BaseIntegrationTest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ class MovieMySqlRepositoryIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private MovieMySqlRepository movieMySqlRepository;
 
-    @AfterEach
+    @BeforeEach
     void cleanupMovies() {
         String deleteQuery = "DELETE FROM movies;";
         executeQuery(deleteQuery);

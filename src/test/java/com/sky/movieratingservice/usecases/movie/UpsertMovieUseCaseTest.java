@@ -4,6 +4,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.usecases.repositories.MovieRepository;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
@@ -26,10 +27,11 @@ class UpsertMovieUseCaseTest {
     @DisplayName("Should create movie by delegating to repository")
     void create_delegatesToRepository() {
         String name = "Inception";
+        Movie movie = Movie.builder().name(name).ratingCount(0).averageRating(BigDecimal.ZERO).build();
 
         upsertMovieUseCase.create(name);
 
-        verify(movieRepository, times(1)).createMovie(name);
+        verify(movieRepository, times(1)).createMovie(movie);
         verifyNoMoreInteractions(movieRepository);
     }
 

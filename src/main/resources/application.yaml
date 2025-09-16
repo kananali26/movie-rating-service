@@ -23,12 +23,6 @@ springdoc:
       enabled: true
   swagger-ui:
     path: /swagger-ui.html
-#    operationsSorter: method
-#    tagsSorter: alpha
-#    display-request-duration: true
-#    use-root-path: true
-#    oauth:
-#      use-pkce-with-authorization-code-grant: true
 
 # get secret from secret-manager
 app:

@@ -1,16 +1,20 @@
 spring:
   flyway:
-    enabled: true
+    enabled: false
     validate-on-migrate: false
   jpa:
-    generate-ddl: 'false'
+    generate-ddl: 'true'
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         jdbc:
           batch_size: 10
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
   datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 5

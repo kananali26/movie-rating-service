@@ -7,16 +7,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.MovieListResponseDto;
 import com.sky.movieratingservice.utils.BaseIntegrationTest;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
 
 class MovieRestControllerIntegrationTest extends BaseIntegrationTest {
 
-    @AfterEach
+    @BeforeEach
     void cleanupMovies() {
-        String deleteQuery = "DELETE FROM movie;";
+        String deleteQuery = "DELETE FROM movies;";
         executeQuery(deleteQuery);
     }
 
@@ -96,7 +96,7 @@ class MovieRestControllerIntegrationTest extends BaseIntegrationTest {
 
     private void insertMovie(String name) {
         String movieInsertQuery = """ 
-                INSERT INTO movie (name)
+                INSERT INTO movies (name)
                 VALUES ('%s');
                 """;
         executeQuery(String.format(movieInsertQuery, name));
