@@ -13,10 +13,10 @@ public record Movie(long id, String name, Integer ratingCount, BigDecimal averag
                 .divide(BigDecimal.valueOf((long)ratingCount + 1), 2, RoundingMode.HALF_UP);
 
         return Movie.builder()
-                .id(this.id)
-                .name(this.name)
+                .id(id)
+                .name(name)
                 .averageRating(newAverage)
-                .ratingCount(this.ratingCount + 1)
+                .ratingCount(ratingCount + 1)
                 .build();
     }
 
@@ -27,10 +27,10 @@ public record Movie(long id, String name, Integer ratingCount, BigDecimal averag
         );
 
         return Movie.builder()
-                .id(this.id)
-                .name(this.name)
+                .id(id)
+                .name(name)
                 .averageRating(newAverage)
-                .ratingCount(this.ratingCount)
+                .ratingCount(ratingCount)
                 .build();
     }
 
@@ -41,15 +41,15 @@ public record Movie(long id, String name, Integer ratingCount, BigDecimal averag
                     .divide(BigDecimal.valueOf((long)ratingCount - 1), 2, RoundingMode.HALF_UP);
 
             return Movie.builder()
-                    .id(this.id)
-                    .name(this.name)
+                    .id(id)
+                    .name(name)
                     .averageRating(newAverage)
-                    .ratingCount(this.ratingCount - 1)
+                    .ratingCount(ratingCount - 1)
                     .build();
         } else {
             return Movie.builder()
-                    .id(this.id)
-                    .name(this.name)
+                    .id(id)
+                    .name(name)
                     .averageRating(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP))
                     .ratingCount(0)
                     .build();

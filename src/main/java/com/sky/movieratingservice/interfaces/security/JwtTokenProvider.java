@@ -24,20 +24,15 @@ public class JwtTokenProvider implements TokenProvider {
     public JwtTokenProvider(@Value("${app.jwt.secret}") String secret,
                             @Value("${app.jwt.expiration-minutes:60}") long expirationMinutes,
                             Clock clock) {
-
-        if (secret == null || secret.length() < 32) {
-            throw new IllegalArgumentException("JWT secret must be configured and at least 32 characters long");
-        }
-
         this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
         this.expirationMinutes = expirationMinutes;
         this.clock = clock;
     }
 
     @Override
-    public String issue(User user, Duration ttl) {
+    public String issue(User user) {
         var now = Instant.now(clock);
-        Instant expiry = now.plus(ttl != null ? ttl : Duration.ofMinutes(expirationMinutes));
+        Instant expiry = now.plus(Duration.ofMinutes(expirationMinutes));
 
         var roles = user.roles().stream().toList();
 

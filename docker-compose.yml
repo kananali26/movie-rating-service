@@ -12,7 +12,7 @@ services:
       MYSQL_USER: movieuser
       MYSQL_PASSWORD: moviepassword
     volumes:
-      - mysql-data10:/var/lib/mysql
+      - mysql-data16:/var/lib/mysql
     networks:
       - movie-rating-network
     healthcheck:
@@ -26,4 +26,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data10:
+  mysql-data16:

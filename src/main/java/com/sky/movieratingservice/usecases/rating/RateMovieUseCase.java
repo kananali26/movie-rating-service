@@ -7,6 +7,7 @@ import com.sky.movieratingservice.usecases.movie.GetMovieUseCase;
 import com.sky.movieratingservice.usecases.movie.UpsertMovieUseCase;
 import com.sky.movieratingservice.usecases.repositories.RatingRepository;
 import com.sky.movieratingservice.usecases.user.GetUserUseCase;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +28,10 @@ public class RateMovieUseCase {
 
         Rating rating = new Rating(user, movie, value);
 
-        boolean isExists = ratingRepository.existsByMovieIdAndUserId(movieId, user.id());
+        Optional<Integer> existing = ratingRepository.getRatingValue(movieId, user.email());
 
-        if (isExists) {
-            int oldValue = ratingRepository.getRatingValue(movieId, user.email()).get();
-
+        if (existing.isPresent()) {
+            int oldValue = existing.get();
             ratingRepository.update(rating);
             movie = movie.updateRating(oldValue, value);
         } else {

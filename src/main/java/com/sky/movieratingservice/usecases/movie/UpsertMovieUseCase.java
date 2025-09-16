@@ -1,5 +1,6 @@
 package com.sky.movieratingservice.usecases.movie;
 
+import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.usecases.repositories.MovieRepository;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,8 @@ public class UpsertMovieUseCase {
     private final MovieRepository movieRepository;
 
     public void create(String name) {
-        movieRepository.createMovie(name);
+        Movie movie = Movie.builder().name(name).ratingCount(0).averageRating(BigDecimal.ZERO).build();
+        movieRepository.createMovie(movie);
     }
 
     public void update(long movieId, int newCount, BigDecimal newAverage) {

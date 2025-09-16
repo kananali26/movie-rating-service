@@ -19,11 +19,11 @@ class MovieMySqlRepository implements MovieRepository {
     private final MovieDboToMovieConverter movieConverter;
 
     @Override
-    public void createMovie(String name) {
+    public void createMovie(Movie movie) {
         MovieDbo movieDbo = new MovieDbo();
-        movieDbo.setName(name);
-        movieDbo.setRatingCount(0);
-        movieDbo.setAverageRating(BigDecimal.ZERO);
+        movieDbo.setName(movie.name());
+        movieDbo.setRatingCount(movie.ratingCount());
+        movieDbo.setAverageRating(movie.averageRating());
 
         movieJpaRepository.save(movieDbo);
     }

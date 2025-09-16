@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface MovieRepository {
 
-    void createMovie(String name);
+    void createMovie(Movie movie);
 
     PaginatedResult<Movie> getMovies(String name, int pageNumber, int pageSize);
 

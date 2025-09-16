@@ -20,7 +20,7 @@ public class AuthenticationRestController implements AuthenticationApi {
     public ResponseEntity<TokenResponseDto> login(LoginRequestDto loginRequestDto) {
         String token = authenticateUserUseCase.authenticate(loginRequestDto.getEmail(), loginRequestDto.getPassword());
         TokenResponseDto tokenResponseDto = new TokenResponseDto();
-        tokenResponseDto.accessToken(token);
+        tokenResponseDto.token(token);
         return ResponseEntity.ok(tokenResponseDto);
     }
 }

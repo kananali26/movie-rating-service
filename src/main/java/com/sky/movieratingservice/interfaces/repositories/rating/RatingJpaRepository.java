@@ -10,9 +10,6 @@ interface RatingJpaRepository extends JpaRepository<RatingDbo,Long> {
     @Query("SELECT r FROM RatingDbo r WHERE r.movie.id = :movieId AND r.user.email = :email")
     Optional<RatingDbo> findByMovieIdAndUserEmail(long movieId, String email);
 
-    @Query("SELECT COUNT(r) > 0 FROM RatingDbo r WHERE r.movie.id = :movieId AND r.user.id = :userId")
-    boolean existsByMovieIdAndUserId(long movieId, long userId);
-
     @Modifying
     @Query("UPDATE RatingDbo r SET r.rating = :rating WHERE r.movie.id = :movieId AND r.user.id = :userId")
     void updateRatingByMovieIdAndUserId(long movieId, long userId, Integer rating);

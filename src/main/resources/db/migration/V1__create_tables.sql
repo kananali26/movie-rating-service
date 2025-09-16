@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS movies
 (
     id                    BIGINT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name                  VARCHAR(255)   NOT NULL,
-    rating_count          BIGINT         NOT NULL,
-    average_rating        DECIMAL(6, 4) NOT NULL,
+    rating_count          BIGINT         NOT NULL DEFAULT 0,
+    average_rating        DECIMAL(3, 1) NOT NULL DEFAULT 0.0,
     created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
