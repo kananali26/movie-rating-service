@@ -37,11 +37,6 @@ class RatingMySqlRepository implements RatingRepository {
     }
 
     @Override
-    public boolean existsByMovieIdAndUserId(Long movieId, Long userId) {
-        return ratingJpaRepository.existsByMovieIdAndUserId(movieId, userId);
-    }
-
-    @Override
     public void update(Rating rating) {
         ratingJpaRepository.updateRatingByMovieIdAndUserId(rating.movie().id(), rating.user().id(), rating.value());
     }
@@ -50,4 +45,5 @@ class RatingMySqlRepository implements RatingRepository {
     public Optional<Integer> getRatingValue(long movieId, String email) {
         return ratingJpaRepository.findRatingByMovieIdAndUserId(movieId, email);
     }
+
 }

@@ -21,7 +21,9 @@ class AuthenticationRestControllerIntegrationTest extends BaseIntegrationTest {
     void setupDb() {
         executeQuery("DELETE FROM users_roles;");
         executeQuery("DELETE FROM users;");
+        executeQuery("DELETE FROM roles_privileges;");
         executeQuery("DELETE FROM roles;");
+        executeQuery("DELETE FROM privileges;");
         executeQuery("INSERT INTO roles (name) VALUES ('ROLE_USER');");
     }
 

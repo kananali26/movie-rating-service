@@ -9,8 +9,6 @@ public interface RatingRepository {
 
     void deleteRating(long movieId, String email);
 
-    boolean existsByMovieIdAndUserId(Long movieId, Long userId);
-
     void update(Rating rating);
 
     Optional<Integer> getRatingValue(long movieId, String email);

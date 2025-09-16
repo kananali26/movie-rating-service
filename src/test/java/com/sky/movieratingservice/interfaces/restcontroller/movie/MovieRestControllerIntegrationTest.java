@@ -5,10 +5,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.CreateMovieRequestDto;
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.LoginRequestDto;
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.MovieListResponseDto;
+import com.sky.movieratingservice.openapi.interfaces.rest.dtos.RateMovieRequestDto;
+import com.sky.movieratingservice.openapi.interfaces.rest.dtos.RegisterUserRequestDto;
 import com.sky.movieratingservice.openapi.interfaces.rest.dtos.TokenResponseDto;
 import com.sky.movieratingservice.utils.BaseIntegrationTest;
 import java.math.BigDecimal;
@@ -27,13 +30,24 @@ class MovieRestControllerIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void cleanupMovies() {
+        executeQuery("DELETE FROM ratings;");
         executeQuery("DELETE FROM users_roles;");
         executeQuery("DELETE FROM users;");
-        executeQuery("DELETE FROM roles WHERE name = 'ROLE_ADMIN';");
-        executeQuery("DELETE FROM roles WHERE name = 'ROLE_USER';");
+        executeQuery("DELETE FROM roles_privileges;");
+        executeQuery("DELETE FROM privileges;");
+        executeQuery("DELETE FROM roles;");
+        executeQuery("DELETE FROM movies;");
+
         executeQuery("INSERT INTO roles (name) VALUES ('ROLE_ADMIN');");
         executeQuery("INSERT INTO roles (name) VALUES ('ROLE_USER');");
-        executeQuery("DELETE FROM movies;");
+        executeQuery("INSERT INTO privileges (name) VALUES ('RATE_MOVIE');");
+        executeQuery("INSERT INTO privileges (name) VALUES ('DELETE_MOVIE_RATING');");
+
+        Long roleUserId = getRowId("SELECT id AS id FROM roles WHERE name = 'ROLE_USER'");
+        Long rateMoviePrivilegeId = getRowId("SELECT id AS id FROM privileges WHERE name = 'RATE_MOVIE'");
+        Long deletePrivilegeId = getRowId("SELECT id AS id FROM privileges WHERE name = 'DELETE_MOVIE_RATING'");
+        executeQuery("INSERT INTO roles_privileges (role_id, privilege_id) VALUES (%d, %d);".formatted(roleUserId, rateMoviePrivilegeId));
+        executeQuery("INSERT INTO roles_privileges (role_id, privilege_id) VALUES (%d, %d);".formatted(roleUserId, deletePrivilegeId));
     }
 
     @Test
@@ -283,6 +297,201 @@ class MovieRestControllerIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.errorMessage").value("Access is forbidden to: /api/v1/movies"));
     }
 
+    @Test
+    @DisplayName("POST /api/v1/movies/{id}/ratings should succeed for a user with RATE_MOVIE privilege")
+    @SneakyThrows
+    void rateMovie_withRateMoviePrivilege_returns200_andPersists() {
+        // ---- Admin user (direct DB insert) to create a movie ----
+        String adminEmail = "my_admin_007@example.com";
+        String adminRawPassword = "Admin#123";
+        String adminEncoded = new BCryptPasswordEncoder().encode(adminRawPassword);
+
+        executeQuery(("INSERT INTO users (email, password) VALUES ('%s', '%s');")
+                .formatted(adminEmail, adminEncoded));
+
+        Long adminId = getRowId(("SELECT id AS id FROM users WHERE email = '%s'").formatted(adminEmail));
+        Long roleAdminId = getRowId("SELECT id AS id FROM roles WHERE name = 'ROLE_ADMIN'");
+        executeQuery(("INSERT INTO users_roles (user_id, role_id) VALUES (%d, %d);")
+                .formatted(adminId, roleAdminId));
+
+        // Login as admin
+        var adminLogin = LoginRequestDto.builder()
+                .email(adminEmail)
+                .password(adminRawPassword)
+                .build();
+
+        MvcResult adminLoginRes = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(adminLogin)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TokenResponseDto adminTokenResponseDto = objectMapper.readValue(adminLoginRes.getResponse().getContentAsString(), TokenResponseDto.class);
+
+        assertNotNull(adminTokenResponseDto);
+        assertNotNull(adminTokenResponseDto.getToken());
+
+        String adminToken = adminTokenResponseDto.getToken();
+
+        // Create a movie as admin
+        var createMovie = CreateMovieRequestDto.builder().name("Heat").build();
+        mockMvc.perform(post("/api/v1/movies")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createMovie)))
+                .andExpect(status().isCreated());
+
+        Long movieId = getRowId("SELECT id AS id FROM movies WHERE name = 'Heat'");
+        assertNotNull(movieId);
+
+        // ---- Regular user (via API) who has ROLE_USER (mapped to RATE_MOVIE) ----
+        String userEmail = "my_user_007@example.com";
+        String userPassword = "User#12345";
+        var register = RegisterUserRequestDto.builder()
+                .email(userEmail)
+                .password(userPassword)
+                .build();
+
+        mockMvc.perform(post("/api/v1/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().isCreated());
+
+        // Login regular user
+        var userLogin = LoginRequestDto.builder()
+                .email(userEmail)
+                .password(userPassword)
+                .build();
+
+        MvcResult userLoginRes = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userLogin)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TokenResponseDto userTokenResponseDto = objectMapper.readValue(userLoginRes.getResponse().getContentAsString(), TokenResponseDto.class);
+
+        assertNotNull(userTokenResponseDto);
+        assertNotNull(userTokenResponseDto.getToken());
+
+        String userToken = userTokenResponseDto.getToken();
+
+        // ---- Rate the movie ----
+        var rateReq = RateMovieRequestDto.builder().value(9).build();
+
+        mockMvc.perform(post("/api/v1/movies/" + movieId + "/ratings")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rateReq)))
+                .andExpect(status().isOk());
+
+        // ---- Verify DB: rating row exists ----
+        Long userId = getRowId(("SELECT id AS id FROM users WHERE email = '%s'").formatted(userEmail));
+
+        List<Map<String, Object>> ratingRows = fetchDbQueryResult(("""
+            SELECT r.id AS id, r.rating AS rating
+            FROM ratings r
+            WHERE r.movie_id = %d AND r.user_id = %d
+        """).formatted(movieId, userId));
+
+        assertEquals(1, ratingRows.size(), "Exactly one rating row expected");
+        var row = ratingRows.getFirst();
+        assertNotNull(row.get("id"));
+        assertEquals(9, ((Number) row.get("rating")).intValue(), "Stored rating must match request value");
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/movies/{id}/ratings should remove rating for a user with DELETE_MOVIE_RATING privilege")
+    @SneakyThrows
+    void deleteRating_withDeletePrivilege_removesRow() {
+        // ---- Admin user (direct DB insert) to create a movie ----
+        String adminEmail = "admin_sky_1_089@example.com";
+        String adminRawPassword = "Admin#123";
+        String adminEncoded = new BCryptPasswordEncoder().encode(adminRawPassword);
+
+        executeQuery(("INSERT INTO users (email, password) VALUES ('%s', '%s');")
+                .formatted(adminEmail, adminEncoded));
+
+        Long adminId = getRowId(("SELECT id AS id FROM users WHERE email = '%s'").formatted(adminEmail));
+        Long roleAdminId = getRowId("SELECT id AS id FROM roles WHERE name = 'ROLE_ADMIN'");
+        executeQuery(("INSERT INTO users_roles (user_id, role_id) VALUES (%d, %d);")
+                .formatted(adminId, roleAdminId));
+
+        // Login as admin
+        var adminLogin = LoginRequestDto.builder().email(adminEmail).password(adminRawPassword).build();
+        MvcResult adminLoginRes = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(adminLogin)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TokenResponseDto adminTokenResponseDto = objectMapper.readValue(adminLoginRes.getResponse().getContentAsString(), TokenResponseDto.class);
+
+        String adminToken = adminTokenResponseDto.getToken();
+
+
+        // Create a movie as admin
+        var createMovie = CreateMovieRequestDto.builder().name("Collateral").build();
+        mockMvc.perform(post("/api/v1/movies")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createMovie)))
+                .andExpect(status().isCreated());
+        Long movieId = getRowId("SELECT id AS id FROM movies WHERE name = 'Collateral'");
+        assertNotNull(movieId);
+
+        // ---- Regular user (via API) who has ROLE_USER with required privileges ----
+        String userEmail = "user_s_k_y_1_9_7@example.com";
+        String userPassword = "User#12345";
+        var register = RegisterUserRequestDto.builder().email(userEmail).password(userPassword).build();
+
+        mockMvc.perform(post("/api/v1/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().isCreated());
+
+        // Login regular user
+        var userLogin = LoginRequestDto.builder().email(userEmail).password(userPassword).build();
+        MvcResult userLoginRes = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userLogin)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TokenResponseDto userTokenResponseDto = objectMapper.readValue(userLoginRes.getResponse().getContentAsString(), TokenResponseDto.class);
+
+        String userToken = userTokenResponseDto.getToken();
+
+        // ---- Rate the movie (so there's something to delete) ----
+        var rateReq = RateMovieRequestDto.builder().value(7).build();
+        mockMvc.perform(post("/api/v1/movies/" + movieId + "/ratings")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rateReq)))
+                .andExpect(status().isOk());
+
+        Long userId = getRowId(("SELECT id AS id FROM users WHERE email = '%s'").formatted(userEmail));
+
+        List<Map<String, Object>> beforeRows = fetchDbQueryResult(("""
+            SELECT COUNT(*) AS cnt FROM ratings
+            WHERE movie_id = %d AND user_id = %d
+        """).formatted(movieId, userId));
+        assertEquals(1, ((Number) beforeRows.getFirst().get("cnt")).intValue(), "rating must exist before delete");
+
+
+        // ---- Delete the rating ----
+        mockMvc.perform(delete("/api/v1/movies/" + movieId + "/ratings")
+                        .header("Authorization", "Bearer " + userToken))
+                .andExpect(status().isOk());
+
+        // ---- Verify rating row is gone ----
+        List<Map<String, Object>> afterRows = fetchDbQueryResult(("""
+            SELECT COUNT(*) AS cnt FROM ratings
+            WHERE movie_id = %d AND user_id = %d
+        """).formatted(movieId, userId));
+        assertEquals(0, ((Number) afterRows.getFirst().get("cnt")).intValue(), "rating must be deleted");
+    }
+
 
     private void insertMovie(String name, int ratingCount, double averageRating) {
         String movieInsertQuery = """ 
@@ -290,6 +499,14 @@ class MovieRestControllerIntegrationTest extends BaseIntegrationTest {
                 VALUES ('%s', %d, %.2f);
                 """;
         executeQuery(String.format(movieInsertQuery, name, ratingCount, averageRating));
+    }
+
+    private Long getRowId(String sqlSelect) {
+        List<Map<String, Object>> rows = fetchDbQueryResult(sqlSelect);
+        assertEquals(1, rows.size(), "Expected exactly 1 row for: " + sqlSelect);
+        Object id = rows.getFirst().get("id");
+        assertNotNull(id, "id must not be null for: " + sqlSelect);
+        return ((Number) id).longValue();
     }
 
 }
