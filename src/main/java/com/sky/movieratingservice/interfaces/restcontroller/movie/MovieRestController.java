@@ -64,6 +64,8 @@ public class MovieRestController implements MovieApi {
     @Override
     public ResponseEntity<Void> rateMovie(Integer movieId, RateMovieRequestDto rateMovieRequestDto) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Rating movie with id: {}, username: {}", movieId, username);
+
         rateMovieUseCase.rateMovie(username, movieId, rateMovieRequestDto.getValue());
         return ResponseEntity.ok().build();
     }
@@ -71,6 +73,7 @@ public class MovieRestController implements MovieApi {
     @Override
     public ResponseEntity<Void> deleteMovieRating(Integer movieId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Deleting movie rating with id: {}", movieId);
         deleteMovieRatingUseCase.deleteMovieRating(movieId, username);
         return ResponseEntity.ok().build();
     }

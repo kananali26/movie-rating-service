@@ -2,9 +2,8 @@ package com.sky.movieratingservice.interfaces.repositories.user;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-interface UserJpaRepository extends JpaRepository<UserDbo, Long>, JpaSpecificationExecutor<UserDbo> {
+interface UserJpaRepository extends JpaRepository<UserDbo, Long> {
 
     Optional<UserDbo> findByEmail(String email);
 

@@ -7,6 +7,7 @@ import com.sky.movieratingservice.utils.BaseIntegrationTest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,32 @@ class MovieMySqlRepositoryIntegrationTest extends BaseIntegrationTest {
     void cleanupMovies() {
         String deleteQuery = "DELETE FROM movies;";
         executeQuery(deleteQuery);
+    }
+
+    @Test
+    @DisplayName("createMovie should insert a new row into movies table")
+    void createMovie_insertsRow() {
+        Movie movie = new Movie(0L, "New Movie", 0, BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+
+        movieMySqlRepository.createMovie(movie);
+
+        List<Map<String, Object>> rows = fetchDbQueryResult("""
+            SELECT id AS id, name AS name, rating_count AS rating_count, average_rating AS average_rating
+            FROM movies
+            WHERE name = 'New Movie'
+        """);
+
+        assertEquals(1, rows.size(), "Exactly one row should be inserted");
+
+        Map<String, Object> r = rows.getFirst();
+        assertNotNull(r.get("id"));
+        assertTrue(((Number) r.get("id")).longValue() > 0);
+
+        assertEquals("New Movie", r.get("name"));
+        assertEquals(0, ((Number) r.get("rating_count")).intValue());
+
+        BigDecimal dbAvg = (BigDecimal) r.get("average_rating");
+        assertEquals(0, dbAvg.compareTo(BigDecimal.ZERO), "Average should be 0.00");
     }
 
     @Test
@@ -97,6 +124,56 @@ class MovieMySqlRepositoryIntegrationTest extends BaseIntegrationTest {
         assertEquals("Pulp Fiction", movies.get(2).name());
         assertEquals(BigDecimal.valueOf(8).setScale(2, RoundingMode.HALF_UP), movies.get(2).averageRating().setScale(2, RoundingMode.HALF_UP));
         assertEquals(1, movies.get(2).ratingCount());
+    }
+
+    @Test
+    @DisplayName("getMovie should return the movie when id exists")
+    void getMovie_existingId_returnsMovie() {
+        insertMovie("Inception", 2, 8.80);
+
+        List<Map<String, Object>> rows = fetchDbQueryResult("""
+            SELECT id AS id FROM movies WHERE name = '%s'
+        """.formatted("Inception"));
+
+        assertEquals(1, rows.size(), "Expected one movie row for name: " + "Inception");
+        long id = ((Number) rows.getFirst().get("id")).longValue();
+
+        var opt = movieMySqlRepository.getMovie(id);
+
+        assertTrue(opt.isPresent(), "Movie must be found");
+        Movie m = opt.get();
+        assertEquals(id, m.id());
+        assertEquals("Inception", m.name());
+        assertEquals(2, m.ratingCount());
+        assertEquals(0, m.averageRating().compareTo(BigDecimal.valueOf(8.80)));
+    }
+
+    @Test
+    @DisplayName("updateRatingCountAndAverage should update rating_count and average_rating fields")
+    void updateRatingCountAndAverage_updatesRow() {
+        insertMovie("The Matrix", 3, 9.00);
+
+        List<Map<String, Object>> getId = fetchDbQueryResult("""
+            SELECT id AS id FROM movies WHERE name = '%s'
+        """.formatted("The Matrix"));
+
+        assertEquals(1, getId.size(), "Expected one movie row for name: " + "The Matrix");
+        long id = ((Number) getId.getFirst().get("id")).longValue();
+
+        movieMySqlRepository.updateRatingCountAndAverage(id, 4, BigDecimal.valueOf(9.25));
+
+        List<Map<String, Object>> rows = fetchDbQueryResult(("""
+            SELECT rating_count AS rating_count, average_rating AS average_rating
+            FROM movies
+            WHERE id = %d
+        """).formatted(id));
+
+        assertEquals(1, rows.size());
+        int newCount = ((Number) rows.getFirst().get("rating_count")).intValue();
+        BigDecimal newAvg = (BigDecimal) rows.getFirst().get("average_rating");
+
+        assertEquals(4, newCount);
+        assertEquals(0, newAvg.compareTo(BigDecimal.valueOf(9.25)));
     }
 
     private void insertMovie(String name, int ratingCount, double averageRating) {
