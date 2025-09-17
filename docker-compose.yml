@@ -12,7 +12,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     volumes:
-      - testing1:/var/lib/mysql
+      - testing12:/var/lib/mysql
     networks:
       - movie-rating-network
     healthcheck:
@@ -48,4 +48,4 @@ networks:
     driver: bridge
 
 volumes:
-  testing1:
+  testing12:

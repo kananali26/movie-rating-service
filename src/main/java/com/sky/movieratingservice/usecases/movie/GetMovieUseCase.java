@@ -27,6 +27,6 @@ public class GetMovieUseCase {
     public Movie getMovie(long movieId) {
         return movieRepository
                 .getMovie(movieId)
-                .orElseThrow(() -> new NotFoundException(String.format("Movie with id:%d not found", movieId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Movie with id: %d not found", movieId)));
     }
 }

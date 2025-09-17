@@ -87,7 +87,7 @@ class GetMovieUseCaseTest {
                 () -> getMovieUseCase.getMovie(movieId)
         );
 
-        assertEquals(String.format("Movie with id:%d not found", movieId), ex.getMessage());
+        assertEquals(String.format("Movie with id: %d not found", movieId), ex.getMessage());
         verify(movieRepository, times(1)).getMovie(movieId);
         verifyNoMoreInteractions(movieRepository);
     }

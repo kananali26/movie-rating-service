@@ -4,8 +4,8 @@ import com.sky.movieratingservice.domain.Role;
 import com.sky.movieratingservice.domain.User;
 import com.sky.movieratingservice.usecases.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ class UserMySqlRepository implements UserRepository {
         UserDbo userDbo = new UserDbo();
         userDbo.setEmail(email);
         userDbo.setPassword(password);
-        userDbo.setRoles(List.of(entityManager.getReference(RoleDbo.class, role.id())));
+        userDbo.setRoles(Set.of(entityManager.getReference(RoleDbo.class, role.id())));
 
         userJpaRepository.save(userDbo);
     }
