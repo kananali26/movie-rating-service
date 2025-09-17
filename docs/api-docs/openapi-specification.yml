@@ -49,6 +49,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/MovieListResponseDto'
           description: Successfully retrieved the list of movies
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
     post:
       operationId: createMovie
       summary: Create Movie
@@ -64,7 +76,32 @@ paths:
       responses:
         "201":
           description: Movie created successfully
-
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "401":
+          description: |
+            Unauthorized.
+            The required authentication was not provided or the provided one was expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "403":
+          description: The user is unauthorized to access the endpoint with the current credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
 
   /api/v1/movies/{movieId}/ratings:
     post:
@@ -89,6 +126,32 @@ paths:
       responses:
         "200":
           description: Movie rated successfully
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "401":
+          description: |
+            Unauthorized.
+            The required authentication was not provided or the provided one was expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "403":
+          description: The user is unauthorized to access the endpoint with the current credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
     delete:
       operationId: deleteMovieRating
       summary: Delete a movie rating
@@ -105,6 +168,32 @@ paths:
       responses:
         "200":
           description: Movie rating deleted successfully
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "401":
+          description: |
+            Unauthorized.
+            The required authentication was not provided or the provided one was expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "403":
+          description: The user is unauthorized to access the endpoint with the current credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
 
   /api/v1/users/register:
     post:
@@ -113,7 +202,6 @@ paths:
       description: Endpoint to register a new user
       tags:
         - User
-#      security: [ ]  # No authentication required for registration
       requestBody:
         required: true
         content:
@@ -123,10 +211,32 @@ paths:
       responses:
         "201":
           description: User registered successfully
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
         "400":
-          description: Bad request - Invalid input data
-        "409":
-          description: Conflict - Username or email already exists
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "401":
+          description: |
+            Unauthorized.
+            The required authentication was not provided or the provided one was expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "403":
+          description: The user is unauthorized to access the endpoint with the current credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
   /api/v1/movies/top-rated:
     get:
       operationId: getTopRatedMovies
@@ -149,6 +259,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/MovieListResponseDto'
           description: Successfully retrieved the list of top rated movies
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
   
   /api/v1/auth/login:
     post:
@@ -157,7 +279,6 @@ paths:
       description: Endpoint to authenticate user and receive JWT token
       tags:
         - Authentication
-#      security: [ ]
       requestBody:
         required: true
         content:
@@ -171,10 +292,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponseDto'
-        "401":
-          description: Authentication failed
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
         "400":
-          description: Bad request - Invalid input data
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "401":
+          description: |
+            Unauthorized.
+            The required authentication was not provided or the provided one was expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
+        "403":
+          description: The user is unauthorized to access the endpoint with the current credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseDto'
 
 components:
   securitySchemes:
@@ -274,3 +417,13 @@ components:
           maximum: 10
           example: 8
       required: [ "value" ]
+    ApiErrorResponseDto:
+      type: object
+      properties:
+        errorCode:
+          type: string
+          example: "AUTHORIZATION_ERROR"
+        errorMessage:
+          type: string
+          example: "Access is forbidden to requested API"
+

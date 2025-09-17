@@ -3,6 +3,7 @@ package com.sky.movieratingservice.interfaces.restcontroller;
 import com.sky.movieratingservice.domain.exception.InvalidRequestException;
 import com.sky.movieratingservice.domain.exception.NotFoundException;
 import com.sky.movieratingservice.domain.exception.UnauthorizedException;
+import com.sky.movieratingservice.openapi.interfaces.rest.dtos.ApiErrorResponseDto;
 import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<ApiErrorResponseDto> handleInvalidRequestException(InvalidRequestException ex) {
+    public ResponseEntity<com.sky.movieratingservice.openapi.interfaces.rest.dtos.ApiErrorResponseDto> handleInvalidRequestException(InvalidRequestException ex) {
         ApiErrorResponseDto errorDto = ApiErrorResponseDto.builder()
                 .errorCode("INVALID_REQUEST")
                 .errorMessage(ex.getMessage())

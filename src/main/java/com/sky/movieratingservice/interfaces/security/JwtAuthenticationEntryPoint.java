@@ -1,7 +1,7 @@
 package com.sky.movieratingservice.interfaces.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sky.movieratingservice.interfaces.restcontroller.ApiErrorResponseDto;
+import com.sky.movieratingservice.openapi.interfaces.rest.dtos.ApiErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

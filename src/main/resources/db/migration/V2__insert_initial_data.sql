@@ -51,7 +51,7 @@ WHERE r.name = 'ROLE_USER'
 
 
 -- Insert users
--- Password for all users is: Password123
+-- Password for all users is: Password123!
 INSERT INTO users (email, password)
 VALUES
     ('admin1@example.com', '$2a$10$sVGAcPcpWQc6gk/jLULFquK.zCEeJ2KlD/Hkxt.4Ne586S7CdC6Pu'),

@@ -9,14 +9,36 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: movie_rating
-      MYSQL_USER: movieuser
-      MYSQL_PASSWORD: moviepassword
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     volumes:
-      - mysql-data16:/var/lib/mysql
+      - testing1:/var/lib/mysql
     networks:
       - movie-rating-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: movie-rating-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/movie_rating
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - movie-rating-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,4 +48,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data16:
+  testing1:
