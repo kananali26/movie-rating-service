@@ -74,8 +74,9 @@ The API is documented using OpenAPI. When the application is running, you can ac
 
 The application uses MySQL as its database. The schema is managed using Flyway migrations, which are automatically applied when the application starts.
 
-![](/Users/macbookpro/Documents/movie-rating-db.png)
+Below is the Entity-Relationship Diagram (ERD) for the Movie Rating Service database:
 
+![Movie Rating Database ERD](movie-rating-db-erd.png)
 
 ### Initial Data
 
