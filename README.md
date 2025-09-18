@@ -74,6 +74,9 @@ The API is documented using OpenAPI. When the application is running, you can ac
 
 The application uses MySQL as its database. The schema is managed using Flyway migrations, which are automatically applied when the application starts.
 
+![](/Users/macbookpro/Documents/movie-rating-db.png)
+
+
 ### Initial Data
 
 When the application starts, it automatically loads initial data through Flyway migrations (see `src/main/resources/db/migration/V2__insert_initial_data.sql`). This includes:
