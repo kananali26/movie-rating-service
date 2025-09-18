@@ -64,8 +64,8 @@ The API is documented using OpenAPI. When the application is running, you can ac
 
 - `GET /api/v1/movies` - List all movies (paginated)
 - `POST /api/v1/movies` - Create a new movie (admin only)
-- `POST /api/v1/movies/{movieId}/ratings` - Rate a movie
-- `DELETE /api/v1/movies/{movieId}/ratings` - Delete a movie rating
+- `POST /api/v1/movies/{movieId}/ratings` - Rate a movie (authenticated user or admin)
+- `DELETE /api/v1/movies/{movieId}/ratings` - Delete a movie rating (authenticated user or admin)
 - `GET /api/v1/movies/top-rated` - Get top-rated movies
 - `POST /api/v1/users/register` - Register a new user
 - `POST /api/v1/auth/login` - Authenticate and get JWT token
