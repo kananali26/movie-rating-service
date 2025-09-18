@@ -12,7 +12,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     volumes:
-      - testing12:/var/lib/mysql
+      - movie-rating-volume:/var/lib/mysql
     networks:
       - movie-rating-network
     healthcheck:
@@ -43,9 +43,60 @@ services:
       timeout: 5s
       retries: 5
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
+    container_name: movie-rating-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    volumes:
+      - elastic-search-volume:/usr/share/elasticsearch/data
+    networks:
+      - movie-rating-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"yellow\"\\|\"status\":\"green\"'" ]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.0
+    container_name: movie-rating-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - movie-rating-network
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.14.0
+    container_name: movie-rating-filebeat
+    user: root                      # needed to read Docker logs
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_started
+      kibana:
+        condition: service_started
+    networks:
+      - movie-rating-network
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: [ "-e", "-strict.perms=false" ]
+
 networks:
   movie-rating-network:
     driver: bridge
 
 volumes:
-  testing12:
+  movie-rating-volume:
+  elastic-search-volume:

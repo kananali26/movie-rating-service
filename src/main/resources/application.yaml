@@ -12,7 +12,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
     open-in-view: false
 
 springdoc:
@@ -63,10 +62,3 @@ management:
 app:
   jwt:
     secret: kB7sD9vN3xQ2mL8yF5zR1tU4oJ6pC0aEwH9iV2nY5qG7sX3bT1
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type: DEBUG
-    org.springframework.orm.jpa: DEBUG
-    org.springframework.transaction: DEBUG
