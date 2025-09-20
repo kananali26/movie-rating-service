@@ -4,8 +4,11 @@ import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.usecases.movie.GetMovieUseCase;
 import com.sky.movieratingservice.usecases.movie.UpsertMovieUseCase;
 import com.sky.movieratingservice.usecases.repositories.RatingRepository;
+import jakarta.persistence.OptimisticLockException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ public class DeleteMovieRatingUseCase {
     private final UpsertMovieUseCase upsertMovieUseCase;
 
     @Transactional
+    @Retryable(retryFor = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
     public void deleteMovieRating(long movieId, String email) {
         Movie movie = getMovieUseCase.getMovie(movieId);
 

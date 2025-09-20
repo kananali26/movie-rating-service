@@ -2,6 +2,7 @@ package com.sky.movieratingservice.interfaces.repositories.movie;
 
 import com.sky.movieratingservice.domain.Movie;
 import com.sky.movieratingservice.domain.PaginatedResult;
+import com.sky.movieratingservice.domain.exception.NotFoundException;
 import com.sky.movieratingservice.usecases.repositories.MovieRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -51,7 +52,14 @@ class MovieMySqlRepository implements MovieRepository {
 
     @Override
     public void updateRatingCountAndAverage(long movieId, int newCount, BigDecimal newAverage) {
-        movieJpaRepository.updateRatingCountAndAverageById(movieId, newCount, newAverage);
+        MovieDbo movieDbo = movieJpaRepository
+                .findById(movieId)
+                .orElseThrow(() -> new NotFoundException(String.format("Movie not found: id: %d", movieId)));
+
+        movieDbo.setRatingCount(newCount);
+        movieDbo.setAverageRating(newAverage);
+
+        movieJpaRepository.save(movieDbo);
     }
 
     @Override

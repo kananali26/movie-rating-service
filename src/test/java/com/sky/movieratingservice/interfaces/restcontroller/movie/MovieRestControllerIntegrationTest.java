@@ -495,8 +495,8 @@ class MovieRestControllerIntegrationTest extends BaseIntegrationTest {
 
     private void insertMovie(String name, int ratingCount, double averageRating) {
         String movieInsertQuery = """ 
-                INSERT INTO movies (name, rating_count, average_rating)
-                VALUES ('%s', %d, %.2f);
+                INSERT INTO movies (name, rating_count, average_rating, version)
+                VALUES ('%s', %d, %.2f, 0);
                 """;
         executeQuery(String.format(movieInsertQuery, name, ratingCount, averageRating));
     }
@@ -508,5 +508,4 @@ class MovieRestControllerIntegrationTest extends BaseIntegrationTest {
         assertNotNull(id, "id must not be null for: " + sqlSelect);
         return ((Number) id).longValue();
     }
-
 }

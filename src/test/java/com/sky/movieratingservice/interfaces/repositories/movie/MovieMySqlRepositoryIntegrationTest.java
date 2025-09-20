@@ -163,7 +163,7 @@ class MovieMySqlRepositoryIntegrationTest extends BaseIntegrationTest {
         movieMySqlRepository.updateRatingCountAndAverage(id, 4, BigDecimal.valueOf(9.25));
 
         List<Map<String, Object>> rows = fetchDbQueryResult(("""
-            SELECT rating_count AS rating_count, average_rating AS average_rating
+            SELECT rating_count AS rating_count, average_rating AS average_rating, version as version
             FROM movies
             WHERE id = %d
         """).formatted(id));
@@ -171,15 +171,17 @@ class MovieMySqlRepositoryIntegrationTest extends BaseIntegrationTest {
         assertEquals(1, rows.size());
         int newCount = ((Number) rows.getFirst().get("rating_count")).intValue();
         BigDecimal newAvg = (BigDecimal) rows.getFirst().get("average_rating");
+        long newVersion = ((Number) rows.getFirst().get("version")).longValue();
 
         assertEquals(4, newCount);
         assertEquals(0, newAvg.compareTo(BigDecimal.valueOf(9.25)));
+        assertEquals(1, newVersion, "Version should be incremented after update");
     }
 
     private void insertMovie(String name, int ratingCount, double averageRating) {
         String movieInsertQuery = """ 
-                INSERT INTO movies (name, rating_count, average_rating)
-                VALUES ('%s', %d, %.2f);
+                INSERT INTO movies (name, rating_count, average_rating, version)
+                VALUES ('%s', %d, %.2f, 0);
                 """;
         executeQuery(String.format(movieInsertQuery, name, ratingCount, averageRating));
     }

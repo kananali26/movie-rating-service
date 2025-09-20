@@ -7,8 +7,11 @@ import com.sky.movieratingservice.usecases.movie.GetMovieUseCase;
 import com.sky.movieratingservice.usecases.movie.UpsertMovieUseCase;
 import com.sky.movieratingservice.usecases.repositories.RatingRepository;
 import com.sky.movieratingservice.usecases.user.GetUserUseCase;
+import jakarta.persistence.OptimisticLockException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ public class RateMovieUseCase {
     private final RatingRepository ratingRepository;
 
     @Transactional
+    @Retryable(retryFor = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
     public void rateMovie(String email, long movieId, int value) {
         User user = getUserUseCase.getUser(email);
         Movie movie = getMovieUseCase.getMovie(movieId);
